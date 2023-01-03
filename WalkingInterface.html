@@ -167,14 +167,14 @@
 			Yaw: 0,
 			sup_f: 0,
 			nsup_f: 0,
-			sensor_modeset: 0
+			sensor_modeset: 0,
 			// GainRoll: 0,
 			// GainPitch: 0,
 			// GainKP: 0,
 			// GainKD: 0,
 			// DesireSet: false,
 			// IMUReset: false,
-			// ForceState: false,
+			// ForceState: true
 			// GainSet: false
 		});
 
@@ -294,14 +294,14 @@
 				document.getElementById("Roll").value = msg.IMUData[0];
 				document.getElementById("Pitch").value = msg.IMUData[1];
 				document.getElementById("Yaw").value = msg.IMUData[2];
-				/*document.getElementById("Left_1").value = msg.ForceSensorData[0];
-				document.getElementById("Left_2").value = msg.ForceSensorData[1];
-				document.getElementById("Left_3").value = msg.ForceSensorData[2];
-				document.getElementById("Left_4").value = msg.ForceSensorData[3];
-				document.getElementById("Right_1").value = msg.ForceSensorData[4];
-				document.getElementById("Right_2").value = msg.ForceSensorData[5];
-				document.getElementById("Right_3").value = msg.ForceSensorData[6];
-				document.getElementById("Right_4").value = msg.ForceSensorData[7];*/
+				// document.getElementById("Left_1").value = msg.ForceSensorData[0];
+				// document.getElementById("Left_2").value = msg.ForceSensorData[1];
+				// document.getElementById("Left_3").value = msg.ForceSensorData[2];
+				// document.getElementById("Left_4").value = msg.ForceSensorData[3];
+				// document.getElementById("Right_1").value = msg.ForceSensorData[4];
+				// document.getElementById("Right_2").value = msg.ForceSensorData[5];
+				// document.getElementById("Right_3").value = msg.ForceSensorData[6];
+				// document.getElementById("Right_4").value = msg.ForceSensorData[7];
 			});
 
 			if(Wave_Topic != null)
@@ -584,6 +584,7 @@
 						break;
 					case 1:
 						document.getElementById("cPeriod_T").value = Period_T_tmp;
+						document.getElementById("cY_Swing").value = Y_Swing_Range_tmp;
 						document.getElementById("cT_DSP").value = T_DSP_tmp;
 						document.getElementById("cBASE_Default_Z").value = BASE_Default_Z_tmp;
 						break;
@@ -602,10 +603,10 @@
 					case 2:
 						document.getElementById("luX_Swing").value = X_Swing_Range_tmp;
 						document.getElementById("luY_Swing").value = Y_Swing_Range_tmp;
-						document.getElementById("luZ_Swing").value = Z_Swing_Range_tmp;
+						//document.getElementById("luZ_Swing").value = Z_Swing_Range_tmp;
 						document.getElementById("luPeriod_T").value = Period_T_tmp;
-						document.getElementById("luPeriod_T2").value = Period_T2_tmp;
-						document.getElementById("luSample_Time").value = Sample_Time_tmp;
+						//document.getElementById("luPeriod_T2").value = Period_T2_tmp;
+						//document.getElementById("luSample_Time").value = Sample_Time_tmp;
 						document.getElementById("luOSC_LockRange").value = OSC_LockRange_tmp;
 						document.getElementById("luBASE_Default_Z").value = BASE_Default_Z_tmp;
 						document.getElementById("luX_Swing_COM").value = X_Swing_COM_tmp;
@@ -652,7 +653,7 @@
 			parameter_msg.Y_Swing_Shift = Number(Y_Swing_Shift_tmp);
 			parameter_msg.X_Swing_COM = Number(X_Swing_COM_tmp);
 			parameter_msg.BASE_LIFT_Z = Number(BASE_LIFT_Z_tmp);
-			parameter_msg.Stand_Balance = document.getElementById("balance_").checked;
+			//parameter_msg.Stand_Balance = document.getElementById("balance_").checked;
 			parameter_msg.B_SplineParam.Kick_Point_X = Number(Kick_Point_X_temp);
 			parameter_msg.B_SplineParam.Kick_Point_Y = Number(Kick_Point_Y_temp);
 			parameter_msg.B_SplineParam.Kick_Point_Z = Number(Kick_Point_Z_temp);
@@ -1617,18 +1618,18 @@
 			// else {
 			// 	SensorSet_msg.IMUReset = false;
 			// }
-			/*if (document.getElementById("ForceState").checked) {
-				SensorSet_msg.ForceState = true;
-			}
-			else {
-				SensorSet_msg.ForceState = false;
-			}
-			if (document.getElementById("GainSet").checked) {
-				SensorSet_msg.GainSet = true;
-			}
-			else {
-				SensorSet_msg.GainSet = false;
-			}*/
+			// if (document.getElementById("ForceState").checked) {
+			// 	SensorSet_msg.ForceState = true;
+			// }
+			// else {
+			// 	SensorSet_msg.ForceState = false;
+			// }
+			// if (document.getElementById("GainSet").checked) {
+			// 	SensorSet_msg.GainSet = true;
+			// }
+			// else {
+			// 	SensorSet_msg.GainSet = false;
+			// }
 			SensorSet_Publisher.publish(SensorSet_msg);
 		}
 		function SendGainSet()
@@ -1671,9 +1672,9 @@
 	<!-- NAV BAR -->
 	<ul>
 		<li><a target="_blank" style="text-decoration: underline;" class="navbarright" href="WalkingInterface.html">Walking</a></li>
-		<li><a target="_blank" class="navbarright" href="MotionControlInterface.html">Motion</a></li>
-		<li><a target="_blank" class="navbarright" href="ImageProcessInterface.html">ImageProcess</a></li>
-		<li><a target="_blank" class="navbarright" href="index.html">Home</a></li>
+        <li><a target="_blank" class="navbarright" href="MotionControlInterface.html">Motion</a></li>
+        <li><a target="_blank" class="navbarright" href="ImageProcessInterface.html">ImageProcess</a></li>
+        <li><a target="_blank" class="navbarright" href="PIDcontroll.html">PIDcontroll</a></li>
 		<li class="logo" style="width: 226px;">
 			<a target="_blank" href="index.html" class="logo"><img id="logoimg" src="./resources/TKU_ICLab/iclablogo-02.png"></a>
 		</li>
@@ -1762,7 +1763,7 @@
 						<td>Yaw:</td>
 						<td><input type="text" name="Yaw" id="Yaw" value="0" style="width: 70px"></td>
 					</tr>
-					<!--<tr>
+					<!-- <tr>
 						<td>&nbsp</td>
 					</tr>
 					<tr>
@@ -1799,12 +1800,12 @@
 					<tr>
 						<td>Right_4:</td>
 						<td><input type="text" name="Right_4" id="Right_4" value="0" style="width: 70px"></td>
-					</tr>-->
-					<table style="margin-top: 20px "></table>
+					</tr>
+					<table style="margin-top: 20px "></table> -->
 					<!--<input style="margin-top: 10px " type="checkbox" id="DesireSet" value="DesireSet">ShowSensorValue-->
 					<!-- <input style="margin-top: 10px " type="checkbox" id="IMUReset" value="IMUReset">IMUReset<p></p> -->
-					<!--input style="margin-top: 10px " type="checkbox" id="ForceState" value="ForceState">ForceState&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<input style="margin-top: 10px " type="checkbox" id="GainSet" value="GainSet">GainSet-->
+					<!-- <input style="margin-top: 10px " type="checkbox" id="ForceState" value="ForceState">ForceState&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+					<!-- <input style="margin-top: 10px " type="checkbox" id="GainSet" value="GainSet">GainSet -->
 				</table>
 				<button type="button" style="width: 100px;height: 40px; margin-left: 20px; margin-top: 5px;display: inline-block;" onclick="SendSensorSet()">IMU reset</button>
 				</table>
@@ -1892,6 +1893,10 @@
 				<br /><br />
 				<table>
 					<tr>
+						<td>Y_Swing</td>
+						<td><input type="text" name="Y_Swing" id="cY_Swing" value="0" style="width: 140px" onchange="changeY_Swing_value(this.value)"></td>
+					</tr>
+					<tr>
 						<td>Period_T</td>
 						<td><input type="text" name="Period_T" id="cPeriod_T" value="0" style="width: 140px" onchange="changePeriod_T_value(this.value)"></td>
 					</tr>
@@ -1919,22 +1924,22 @@
 						<td>Y_Swing</td>
 						<td><input type="text" name="Y_Swing" id="luY_Swing" value="0" style="width: 140px" onchange="changeY_Swing_value(this.value)"></td>
 					</tr>
-					<tr>
+					<!--<tr>
 						<td>Z_Swing</td>
 						<td><input type="text" name="Z_Swing" id="luZ_Swing" value="0" style="width: 140px" onchange="changeZ_Swing_value(this.value)"></td>
-					</tr>
+					</tr>-->
 					<tr>
 						<td>Period_T</td>
 						<td><input type="text" name="Period_T" id="luPeriod_T" value="0" style="width: 140px" onchange="changePeriod_T_value(this.value)"></td>
 					</tr>
-					<tr>
+					<!--<tr>
 						<td>Period_T2</td>
 						<td><input type="text" name="Period_T2" id="luPeriod_T2" value="0" style="width: 140px" onchange="changePeriod_T2_value(this.value)"></td>
-					</tr>
-					<tr>
+					</tr>-->
+					<!--<tr>
 						<td>Sample_Time</td>
 						<td><input type="text" name="Sample_Time" id="luSample_Time" value="0" style="width: 140px" onchange="changeSample_Time_value(this.value)"></td>
-					</tr>
+					</tr>-->
 					<tr>
 						<td>OSC_LockRange</td>
 						<td><input type="text" name="OSC_LockRange" id="luOSC_LockRange" value="0" style="width: 140px" onchange="changeOSC_LockRange_value(this.value)"></td>
@@ -1952,10 +1957,10 @@
 						<td><input type="text" name="BASE_LIFT_Z" id="luBASE_LIFT_Z" value="0" style="width: 140px" onchange="changeBASE_LIFT_Z_value(this.value)"></td>
 					</tr>
 				</table>
-				<tr>
+				<!--<tr>
 					<td><input style="margin-top: 10px " type="checkbox" name="balance" id="balance_" value="balance"></td>
 					<td><label for="balance_">balance</label></td>
-				</tr>
+				</tr>-->
 				<br />
 				<button type="button" style="width: 80px;height: 40px; margin-top: 9px;" id="sss" onclick="Save()">Save</button>
 			</section>
@@ -1971,22 +1976,22 @@
 						<td>Y_Swing</td>
 						<td><input type="text" name="Y_Swing" id="ldY_Swing" value="0" style="width: 140px" onchange="changeY_Swing_value(this.value)"></td>
 					</tr>
-					<tr>
+					<!--<tr>
 						<td>Z_Swing</td>
 						<td><input type="text" name="Z_Swing" id="ldZ_Swing" value="0" style="width: 140px" onchange="changeZ_Swing_value(this.value)"></td>
-					</tr>
+					</tr>-->
 					<tr>
 						<td>Period_T</td>
 						<td><input type="text" name="Period_T" id="ldPeriod_T" value="0" style="width: 140px" onchange="changePeriod_T_value(this.value)"></td>
 					</tr>
-					<tr>
+					<!--<tr>
 						<td>Period_T2</td>
 						<td><input type="text" name="Period_T2" id="ldPeriod_T2" value="0" style="width: 140px" onchange="changePeriod_T2_value(this.value)"></td>
-					</tr>
-					<tr>
+					</tr>-->
+					<!--<tr>
 						<td>Sample_Time</td>
 						<td><input type="text" name="Sample_Time" id="ldSample_Time" value="0" style="width: 140px" onchange="changeSample_Time_value(this.value)"></td>
-					</tr>
+					</tr>-->
 					<tr>
 						<td>OSC_LockRange</td>
 						<td><input type="text" name="OSC_LockRange" id="ldOSC_LockRange" value="0" style="width: 140px" onchange="changeOSC_LockRange_value(this.value)"></td>
