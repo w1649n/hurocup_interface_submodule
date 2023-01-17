@@ -18,6 +18,7 @@ ros.on('error', function (error) {
   document.getElementById('SendButton').disabled = true;
   document.getElementById('executeButton').disabled = true;
   document.getElementById('standButton').disabled = true;
+  
   document.getElementById('MultipleButton').disabled = true;
   document.getElementById('MergeButton').disabled = true;
   document.getElementById('AddButton').disabled = true;
@@ -37,6 +38,7 @@ ros.on('close', function () {
   document.getElementById('SendButton').disabled = true;
   document.getElementById('executeButton').disabled = true;
   document.getElementById('standButton').disabled = true;
+  
   document.getElementById('MultipleButton').disabled = true;
   document.getElementById('MergeButton').disabled = true;
   document.getElementById('AddButton').disabled = true;
@@ -57,6 +59,7 @@ var SendPackage = new ROSLIB.Message({
   Package: 0,
   sectorname: ""
 });
+
 
 var SectorPackage = new ROSLIB.Topic({
   ros: ros,
@@ -147,6 +150,7 @@ function createTopics()
         document.getElementById('SendButton').disabled = false;
         document.getElementById('executeButton').disabled = false;
         document.getElementById('standButton').disabled = false;
+        
         document.getElementById('MultipleButton').disabled = false;
         document.getElementById('MergeButton').disabled = false;
         document.getElementById('AddButton').disabled = false;
@@ -160,6 +164,7 @@ function createTopics()
       {
         document.getElementById('stand_label').innerHTML = "is standing";
         document.getElementById('standButton').disabled = false;
+        
         standSubscribeFlag = false;
       }
     }
@@ -211,7 +216,7 @@ function CheckSector(sectordata)
   });
   LoadParameterClient.callService(parameter_request , function(srv)
   {
-    console.log("CheckSector")
+    console.log("CheckSector");
     executeSubscribeFlag = false;
     standSubscribeFlag = false;
     if(srv.checkflag == true)
@@ -225,6 +230,7 @@ function CheckSector(sectordata)
         document.getElementById('ReadStandButton').disabled = false;
         document.getElementById('executeButton').disabled = false;
         document.getElementById('standButton').disabled = false;
+        
         document.getElementById('MultipleButton').disabled = false;
         document.getElementById('MergeButton').disabled = false;
         document.getElementById('AddButton').disabled = false;
@@ -268,6 +274,7 @@ function CheckSector(sectordata)
         document.getElementById('SendButton').disabled = false;
         document.getElementById('executeButton').disabled = false;
         document.getElementById('standButton').disabled = false;
+        
         document.getElementById('MultipleButton').disabled = false;
         document.getElementById('MergeButton').disabled = false;
         document.getElementById('AddButton').disabled = false;
@@ -281,6 +288,7 @@ function CheckSector(sectordata)
       {
         document.getElementById('label').innerHTML = "Sector is not correct !! Please check your sector file !!";
         document.getElementById('standButton').disabled = false;
+        
         doStandFlag = false;
       }
     }
@@ -566,6 +574,7 @@ function Send()
   document.getElementById('ReadStandButton').disabled = true;
   document.getElementById('executeButton').disabled = true;
   document.getElementById('standButton').disabled = true;
+  
   document.getElementById('MultipleButton').disabled = true;
   document.getElementById('MergeButton').disabled = true;
   document.getElementById('AddButton').disabled = true;
@@ -599,8 +608,18 @@ function Send()
     {
       if (ID == document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[i].getElementsByClassName('textbox')[0].value) 
       {
-        MotionList[count++] = 242;
-        for (var j = 0; j < 21; j++) 
+        if(document.getElementById('Lockedstand').checked)
+        {
+          MotionList[count++] = 242;
+          console.log("242 publish start");
+        }
+        else if (!document.getElementById('Lockedstand').checked)
+        {
+          MotionList[count++] = 241;
+          console.log("241 publish start");
+        }
+        
+        for (var j = 0; j < 23; j++) 
         {
           MotionList[count] = (Number(document.getElementById('AbsoluteSpeedTable').getElementsByTagName('div')[i + 1].getElementsByClassName('textbox')[j + 1].value)) & 0xff;
           checksum += MotionList[count];
@@ -614,21 +633,30 @@ function Send()
           MotionList[count] = (((Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[i + 1].getElementsByClassName('textbox')[j + 1].value)) >> 8) & 0xff);
           checksum += MotionList[count];
           count++;
-          if(j < 4)
+          if (j < 4) 
           {
             checksum_Lhand = checksum;
           }
-          else if(j < 8)
+          else if (j < 8) 
           {
             checksum_Rhand = checksum - checksum_Lhand;
           }
-          else if(j < 15)
+          else if (j < 15) 
           {
             checksum_Lfoot = checksum - checksum_Lhand - checksum_Rhand;
+
           }
-          else
+          else if (j < 21)
           {
             checksum_Rfoot = checksum - checksum_Lhand - checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 21) 
+          {
+            checksum_Lhand = checksum - checksum_Rfoot- checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 22)
+          {
+            checksum_Rhand = checksum - checksum_Lhand - checksum_Lfoot - checksum_Rfoot;
           }
         }
         MotionList[count++] = checksum_Lhand & 0xff;
@@ -638,13 +666,15 @@ function Send()
         MotionList[count++] = count - 7;
         MotionList[count++] = 78;
         MotionList[count] = 69;
-		    console.log("242 publish start");
+		    
 		    console.log(MotionList.length);
         for (var a = 0; a < MotionList.length; a++) 
         {
           SendPackage.Package = MotionList[a];
           interface.publish(SendPackage);
+          console.log('ID:',a);
           console.log(SendPackage.Package);
+          console.log('-----')
           sleep(2);
         }
 		    console.log("242 publish end");
@@ -657,7 +687,7 @@ function Send()
       if (ID == document.getElementById('RelativePositionTable').getElementsByTagName('div')[i].getElementsByClassName('textbox')[0].value) 
       {
         MotionList[count++] = 243;
-        for (var j = 0; j < 21; j++) 
+        for (var j = 0; j < 23; j++) 
         {
           MotionList[count] = (Number(document.getElementById('RelativeSpeedTable').getElementsByTagName('div')[i + 1].getElementsByClassName('textbox')[j + 1].value)) & 0xff;
           checksum += MotionList[count];
@@ -697,9 +727,17 @@ function Send()
             checksum_Lfoot = checksum - checksum_Lhand - checksum_Rhand;
 
           }
-          else 
+          else if (j < 21)
           {
             checksum_Rfoot = checksum - checksum_Lhand - checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 21) 
+          {
+            checksum_Lhand = checksum - checksum_Rfoot- checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 22)
+          {
+            checksum_Rhand = checksum - checksum_Lhand - checksum_Lfoot - checksum_Rfoot;
           }
         }
         MotionList[count++] = checksum_Lhand & 0xff;
@@ -715,7 +753,9 @@ function Send()
         {
           SendPackage.Package = MotionList[a];
           interface.publish(SendPackage);
+          console.log('ID:',a);
           console.log(SendPackage.Package);
+          console.log('-----')
           sleep(2);
         }
 		    console.log("243 publish end");
@@ -801,6 +841,18 @@ function Locked()
   }
 }
 
+function Locked2()
+{
+  if (!document.getElementById('Lockedstand').checked)
+  {
+    document.getElementById('label').innerHTML = "Stand Unlocked";
+  }
+  else if (document.getElementById('Lockedstand').checked)
+  {
+    document.getElementById('label').innerHTML = "Stand Locked";
+  }
+}
+
 function execute()
 {
   doExecuteFlag = true;
@@ -812,6 +864,7 @@ function execute()
   document.getElementById('SendButton').disabled = true;
   document.getElementById('executeButton').disabled = true;
   document.getElementById('standButton').disabled = true;
+  
   document.getElementById('MultipleButton').disabled = true;
   document.getElementById('MergeButton').disabled = true;
   document.getElementById('AddButton').disabled = true;
@@ -828,9 +881,11 @@ function stand()
   doStandFlag = true;
   document.getElementById('label').innerHTML = "";
   document.getElementById('standButton').disabled = true;
+  
 
   CheckSector(29);
 }
+
 
 function resetfunction()
 {
@@ -842,6 +897,7 @@ function resetfunction()
   document.getElementById('SendButton').disabled = false;
   document.getElementById('executeButton').disabled = false;
   document.getElementById('standButton').disabled = false;
+  
   document.getElementById('MultipleButton').disabled = false;
   document.getElementById('MergeButton').disabled = false;
   document.getElementById('AddButton').disabled = false;
@@ -849,6 +905,155 @@ function resetfunction()
   document.getElementById('ReverseButton').disabled = false;
   document.getElementById('CopyButton').disabled = false;
   document.getElementById('CheckSumButton').disabled = false;
+}
+
+function addreduce(value)
+{
+  var addreduce = value;
+  console.log(addreduce);
+  var chooseID=document.getElementById("chooseID").value;
+  var resetID=document.getElementById("resetID").value;
+  var n=0;
+  var numflag=false;
+  var Motorflag = false;
+  if(document.getElementById("RelativePosition").style.display == "initial")
+  {
+    console.log("RelativePosition");
+    for(var i = 0; i < document.getElementById('RelativePositionTable').getElementsByTagName('div').length; i += 2)
+	  {
+      if(document.getElementById('RelativePositionTable').getElementsByTagName('div')[i].getElementsByClassName('textbox')[0].value == chooseID)
+	    {
+        n = i;
+        numflag = true;
+        break;
+      }  
+    }
+    if(resetID>21 || resetID<1)
+    {
+      numflag = false;
+      Motorflag = true;
+    }
+    if(numflag == true)
+	  {
+      switch(addreduce)
+      {
+        case "add_5":
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value + 5;
+          break;
+        case "add_10":
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value + 10;
+          break;
+        case "add_100":
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value + 100;
+          break;
+        case "reduce_5":
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value - 5;
+          break;
+        case "reduce_10":
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value - 10;
+          break;
+        case "reduce_100":
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value - 100;
+          break;
+        case "resetmotor":
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = 2048;
+          break;
+        default:
+          var getvalue = Number(document.getElementById('addvalue').value);
+          var value = Number(document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('RelativePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = getvalue + value;
+          break;
+      }
+      document.getElementById('label').innerHTML = "add & reduce is successful !!";
+    }
+    else
+	  {
+      if(Motorflag)
+      {
+        document.getElementById('label').innerHTML = "No this MotorID !!";
+      }
+      else
+      {
+        document.getElementById('label').innerHTML = "add & reduce is fail !! No this ID !!";
+      }
+    }
+  }
+  else if(document.getElementById("AbsolutePosition").style.display == "initial") 
+  {
+    console.log("AbsolutePositionTable");
+    for(var i = 0; i < document.getElementById('AbsolutePositionTable').getElementsByTagName('div').length; i += 2)
+	  {
+      if(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[i].getElementsByClassName('textbox')[0].value == chooseID)
+	    {
+        n = i;
+        numflag = true;
+        break;
+      }  
+    }
+    if(resetID>21 || resetID<1)
+    {
+      numflag = false;
+      Motorflag = true;
+    }
+    if(numflag == true)
+	  {
+      switch(addreduce)
+      {
+        case "add_5":
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value + 5;
+          break;
+        case "add_10":
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value + 10;
+          break;
+        case "add_100":
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value + 100;
+          break;
+        case "reduce_5":
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value - 5;
+          break;
+        case "reduce_10":
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value - 10;
+          break;
+        case "reduce_100":
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = value - 100;
+          break;
+        case "resetmotor":
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = 2048;
+          break;
+        default:
+          var getvalue = Number(document.getElementById('addvalue').value);
+          var value = Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value);
+          document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[n+1].getElementsByClassName('textbox')[resetID].value = getvalue + value;
+          break;
+      }
+      document.getElementById('label').innerHTML = "add & reduce is successful !!";
+    }
+    else
+	  {
+      if(Motorflag)
+      {
+        document.getElementById('label').innerHTML = "No this MotorID !!";
+      }
+      else
+      {
+        document.getElementById('label').innerHTML = "add & reduce is fail !! No this ID !!";
+      }
+    }
+  }
 }
 
 function Multiple()
