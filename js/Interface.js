@@ -611,13 +611,15 @@ function Send()
         if(document.getElementById('Lockedstand').checked)
         {
           MotionList[count++] = 242;
+          console.log("242 publish start");
         }
         else if (!document.getElementById('Lockedstand').checked)
         {
           MotionList[count++] = 241;
+          console.log("241 publish start");
         }
         
-        for (var j = 0; j < 21; j++) 
+        for (var j = 0; j < 23; j++) 
         {
           MotionList[count] = (Number(document.getElementById('AbsoluteSpeedTable').getElementsByTagName('div')[i + 1].getElementsByClassName('textbox')[j + 1].value)) & 0xff;
           checksum += MotionList[count];
@@ -631,21 +633,30 @@ function Send()
           MotionList[count] = (((Number(document.getElementById('AbsolutePositionTable').getElementsByTagName('div')[i + 1].getElementsByClassName('textbox')[j + 1].value)) >> 8) & 0xff);
           checksum += MotionList[count];
           count++;
-          if(j < 4)
+          if (j < 4) 
           {
             checksum_Lhand = checksum;
           }
-          else if(j < 8)
+          else if (j < 8) 
           {
             checksum_Rhand = checksum - checksum_Lhand;
           }
-          else if(j < 15)
+          else if (j < 15) 
           {
             checksum_Lfoot = checksum - checksum_Lhand - checksum_Rhand;
+
           }
-          else
+          else if (j < 21)
           {
             checksum_Rfoot = checksum - checksum_Lhand - checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 21) 
+          {
+            checksum_Lhand = checksum - checksum_Rfoot- checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 22)
+          {
+            checksum_Rhand = checksum - checksum_Lhand - checksum_Lfoot - checksum_Rfoot;
           }
         }
         MotionList[count++] = checksum_Lhand & 0xff;
@@ -655,13 +666,15 @@ function Send()
         MotionList[count++] = count - 7;
         MotionList[count++] = 78;
         MotionList[count] = 69;
-		    console.log("242 publish start");
+		    
 		    console.log(MotionList.length);
         for (var a = 0; a < MotionList.length; a++) 
         {
           SendPackage.Package = MotionList[a];
           interface.publish(SendPackage);
+          console.log('ID:',a);
           console.log(SendPackage.Package);
+          console.log('-----')
           sleep(2);
         }
 		    console.log("242 publish end");
@@ -674,7 +687,7 @@ function Send()
       if (ID == document.getElementById('RelativePositionTable').getElementsByTagName('div')[i].getElementsByClassName('textbox')[0].value) 
       {
         MotionList[count++] = 243;
-        for (var j = 0; j < 21; j++) 
+        for (var j = 0; j < 23; j++) 
         {
           MotionList[count] = (Number(document.getElementById('RelativeSpeedTable').getElementsByTagName('div')[i + 1].getElementsByClassName('textbox')[j + 1].value)) & 0xff;
           checksum += MotionList[count];
@@ -714,9 +727,17 @@ function Send()
             checksum_Lfoot = checksum - checksum_Lhand - checksum_Rhand;
 
           }
-          else 
+          else if (j < 21)
           {
             checksum_Rfoot = checksum - checksum_Lhand - checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 21) 
+          {
+            checksum_Lhand = checksum - checksum_Rfoot- checksum_Rhand - checksum_Lfoot;
+          }
+          else if (j == 22)
+          {
+            checksum_Rhand = checksum - checksum_Lhand - checksum_Lfoot - checksum_Rfoot;
           }
         }
         MotionList[count++] = checksum_Lhand & 0xff;
@@ -732,7 +753,9 @@ function Send()
         {
           SendPackage.Package = MotionList[a];
           interface.publish(SendPackage);
+          console.log('ID:',a);
           console.log(SendPackage.Package);
+          console.log('-----')
           sleep(2);
         }
 		    console.log("243 publish end");
