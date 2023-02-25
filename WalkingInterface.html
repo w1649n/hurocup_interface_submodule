@@ -466,6 +466,7 @@
 		}
 		function singleFun() {
 			statetype = 0;
+			Load();
 			document.getElementById("singlestep").style.display = "inline";
 			document.getElementById("continuousstep").style.display = "none";
 			document.getElementById("lcupstep").style.display = "none";
@@ -477,6 +478,7 @@
 		}
 		function ContinuousFun() {
 			statetype = 1;
+			Load();
 			document.getElementById("singlestep").style.display = "none";
 			document.getElementById("continuousstep").style.display = "inline";
 			document.getElementById("lcupstep").style.display = "none";
@@ -488,6 +490,7 @@
 		}
 		function LC_upFun() {
 			statetype = 2;
+			Load();
 			document.getElementById("singlestep").style.display = "none";
 			document.getElementById("continuousstep").style.display = "none";
 			document.getElementById("lcupstep").style.display = "inline";
@@ -499,6 +502,7 @@
 		}
 		function LC_downFun() {
 			statetype = 3;
+			Load();
 			document.getElementById("singlestep").style.display = "none";
 			document.getElementById("continuousstep").style.display = "none";
 			document.getElementById("lcupstep").style.display = "none";
@@ -510,6 +514,7 @@
 		}
 		function LongJumpFun() {
 			statetype = 4;
+			Load();
 			document.getElementById("singlestep").style.display = "inline";
 			document.getElementById("continuousstep").style.display = "none";
 			document.getElementById("lcupstep").style.display = "none";
@@ -521,6 +526,7 @@
 		}
 		function RKickBallFun() {
 			statetype = 9;
+			Load();
 			document.getElementById("singlestep").style.display = "none";
 			document.getElementById("continuousstep").style.display = "none";
 			document.getElementById("lcupstep").style.display = "none";
@@ -532,6 +538,7 @@
 		}
 		function LKickBallFun() {
 			statetype = 10;
+			Load();
 			document.getElementById("singlestep").style.display = "none";
 			document.getElementById("continuousstep").style.display = "none";
 			document.getElementById("lcupstep").style.display = "none";
@@ -578,9 +585,16 @@
 				Support_Foot_Ankle_Upper_Pitch_temp = walkinggait_parameter.B_SplineParam.Support_Foot_Ankle_Upper_Pitch;
 				switch (statetype) {
 					case 0:
+						//
+						document.getElementById("X_Swing").value = X_Swing_Range_tmp;
+						document.getElementById("Y_Swing").value = Y_Swing_Range_tmp;
 						document.getElementById("Period_T").value = Period_T_tmp;
-						document.getElementById("T_DSP").value = T_DSP_tmp;
+						//document.getElementById("Period_T2").value = Period_T2_tmp;
+						//document.getElementById("Sample_Time").value = Sample_Time_tmp;
+						document.getElementById("OSC_LockRange").value = OSC_LockRange_tmp;
 						document.getElementById("BASE_Default_Z").value = BASE_Default_Z_tmp;
+						document.getElementById("X_Swing_COM").value = X_Swing_COM_tmp;
+						document.getElementById("BASE_LIFT_Z").value = BASE_LIFT_Z_tmp;
 						break;
 					case 1:
 						document.getElementById("cPeriod_T").value = Period_T_tmp;
@@ -615,10 +629,10 @@
 					case 3:
 						document.getElementById("ldX_Swing").value = X_Swing_Range_tmp;
 						document.getElementById("ldY_Swing").value = Y_Swing_Range_tmp;
-						document.getElementById("ldZ_Swing").value = Z_Swing_Range_tmp;
+						// document.getElementById("ldZ_Swing").value = Z_Swing_Range_tmp;
 						document.getElementById("ldPeriod_T").value = Period_T_tmp;
-						document.getElementById("ldPeriod_T2").value = Period_T2_tmp;
-						document.getElementById("ldSample_Time").value = Sample_Time_tmp;
+						// document.getElementById("ldPeriod_T2").value = Period_T2_tmp;
+						// document.getElementById("ldSample_Time").value = Sample_Time_tmp;
 						document.getElementById("ldOSC_LockRange").value = OSC_LockRange_tmp;
 						document.getElementById("ldBASE_Default_Z").value = BASE_Default_Z_tmp;
 						document.getElementById("ldX_Swing_COM").value = X_Swing_COM_tmp;
@@ -836,6 +850,8 @@
 		function changeX_Swing_COM_value(value) {
 			X_Swing_COM_tmp = value;
 			switch (statetype) {
+				case 0:
+					document.getElementById("X_Swing_COM").value = X_Swing_COM_tmp;
 				case 2:
 					document.getElementById("luX_Swing_COM").value = X_Swing_COM_tmp;
 					break;
@@ -847,6 +863,9 @@
 		function changeBASE_LIFT_Z_value(value) {
 			BASE_LIFT_Z_tmp = value;
 			switch (statetype) {
+				case 0:
+					document.getElementById("BASE_LIFT_Z").value = BASE_LIFT_Z_tmp;
+					break;
 				case 2:
 					document.getElementById("luBASE_LIFT_Z").value = BASE_LIFT_Z_tmp;
 					break;
@@ -1872,16 +1891,44 @@
 				<br /><br />
 				<table>
 					<tr>
+						<td>-X_Swing_COM</td>
+						<td><input type="text" name="X_Swing" id="X_Swing" value="0" style="width: 140px" onchange="changeX_Swing_value(this.value)"></td>
+					</tr>
+					<tr>
+						<td>Y_Swing</td>
+						<td><input type="text" name="Y_Swing" id="Y_Swing" value="0" style="width: 140px" onchange="changeY_Swing_value(this.value)"></td>
+					</tr>
+					<!--<tr>
+						<td>Z_Swing</td>
+						<td><input type="text" name="Z_Swing" id="luZ_Swing" value="0" style="width: 140px" onchange="changeZ_Swing_value(this.value)"></td>
+					</tr>-->
+					<tr>
 						<td>Period_T</td>
 						<td><input type="text" name="Period_T" id="Period_T" value="0" style="width: 140px" onchange="changePeriod_T_value(this.value)"></td>
 					</tr>
+					<!--<tr>
+						<td>Period_T2</td>
+						<td><input type="text" name="Period_T2" id="luPeriod_T2" value="0" style="width: 140px" onchange="changePeriod_T2_value(this.value)"></td>
+					</tr>-->
+					<!--<tr>
+						<td>Sample_Time</td>
+						<td><input type="text" name="Sample_Time" id="luSample_Time" value="0" style="width: 140px" onchange="changeSample_Time_value(this.value)"></td>
+					</tr>-->
 					<tr>
-						<td>T_DSP</td>
-						<td><input type="text" name="T_DSP" id="T_DSP" value="0" style="width: 140px" onchange="changeT_DSP_value(this.value)"></td>
+						<td>OSC_LockRange</td>
+						<td><input type="text" name="OSC_LockRange" id="OSC_LockRange" value="0" style="width: 140px" onchange="changeOSC_LockRange_value(this.value)"></td>
 					</tr>
 					<tr>
 						<td>BASE_Default_Z</td>
 						<td><input type="text" name="BASE_Default_Z" id="BASE_Default_Z" value="0" style="width: 140px" onchange="changeBASE_Default_Z_value(this.value)"></td>
+					</tr>
+					<tr>
+						<td>X_Swing_COM</td>
+						<td><input type="text" name="X_Swing_COM" id="X_Swing_COM" value="0" style="width: 140px" onchange="changeX_Swing_COM_value(this.value)"></td>
+					</tr>
+					<tr>
+						<td>BASE_LIFT_Z</td>
+						<td><input type="text" name="BASE_LIFT_Z" id="BASE_LIFT_Z" value="0" style="width: 140px" onchange="changeBASE_LIFT_Z_value(this.value)"></td>
 					</tr>
 				</table>
 				<br />
