@@ -595,7 +595,10 @@
 						document.getElementById("BASE_Default_Z").value = BASE_Default_Z_tmp;
 						document.getElementById("X_Swing_COM").value = X_Swing_COM_tmp;
 						document.getElementById("BASE_LIFT_Z").value = BASE_LIFT_Z_tmp;
-						document.getElementById("balance_").checked = Balance_tmp
+						if(Balance_tmp)
+							document.getElementById("balance_").checked;
+						else
+							document.getElementById("balance_").unchecked;
 						break;
 					case 1:
 						document.getElementById("cX_Swing").value = X_Swing_Range_tmp;
@@ -603,7 +606,10 @@
 						document.getElementById("cY_Swing").value = Y_Swing_Range_tmp;
 						document.getElementById("cT_DSP").value = T_DSP_tmp;
 						document.getElementById("cBASE_Default_Z").value = BASE_Default_Z_tmp;
-						document.getElementById("balance_").checked = Balance_tmp
+						if(Balance_tmp)
+							document.getElementById("balance_").checked;
+						else
+							document.getElementById("balance_").unchecked;
 						break;
 
 					case 4:
@@ -628,7 +634,10 @@
 						document.getElementById("luBASE_Default_Z").value = BASE_Default_Z_tmp;
 						document.getElementById("luX_Swing_COM").value = X_Swing_COM_tmp;
 						document.getElementById("luBASE_LIFT_Z").value = BASE_LIFT_Z_tmp;
-						document.getElementById("balance_").checked = Balance_tmp
+						if(Balance_tmp)
+							document.getElementById("balance_").checked;
+						else
+							document.getElementById("balance_").unchecked;
 						break;
 					case 3:
 						document.getElementById("ldX_Swing").value = X_Swing_Range_tmp;
@@ -641,7 +650,10 @@
 						document.getElementById("ldBASE_Default_Z").value = BASE_Default_Z_tmp;
 						document.getElementById("ldX_Swing_COM").value = X_Swing_COM_tmp;
 						document.getElementById("ldBASE_LIFT_Z").value = BASE_LIFT_Z_tmp;
-						document.getElementById("balance_").checked = Balance_tmp
+						if(Balance_tmp)
+							document.getElementById("balance_").checked;
+						else
+							document.getElementById("balance_").unchecked;
 						break;
 					case 9:
 					case 10:
@@ -982,6 +994,7 @@
 		function changeBalance_value(value)
 		{
 			Balance_tmp = value;
+			console.log(value);
 			switch (statetype) {
 				case 0:
 					document.getElementById("balance_").checked = Balance_tmp;
