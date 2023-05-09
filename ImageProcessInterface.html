@@ -13,23 +13,52 @@
 	<script type="text/javascript" src="./js/roslib/roslib.min.js"></script>
 	<script type="text/javascript" type="text/javascript">
 
+		var wasOnline = true;
 		var ros = new ROSLIB.Ros({
-			url: "ws://172.17.121.10:9090"
+		url: "ws://172.17.121.10:9090"
 		});
+
+		function checkConnection() {
+			if (ros && window.navigator.onLine) {
+				document.body.style.backgroundImage = 'url(./picture/Background.jpg)';
+				console.log('Setting background to online image');
+				if(!wasOnline){
+					console.log("Network status changed to online. Triggering enterAddress().");
+					enterAddress();
+					wasOnline = true;
+				}
+
+			}else{
+				document.body.style.backgroundImage = 'url(./picture/red_filter_image.jpg)';
+				console.log('Setting background to offline image');
+				if(wasOnline){
+					console.log("Network status changed to offline. Triggering enterAddress().");
+					enterAddress();
+					wasOnline = false;
+				}
+				wasOnline = false;
+			}	
+		}
+		
+
+		// Listen to online and offline events
+		window.addEventListener('online', checkConnection);
+		window.addEventListener('offline', checkConnection);
+
 		ros.on('connection', function () {
 			console.log('Connection made!');
 			connectFlag = true;
 			document.getElementById('connected').style.display = 'inline';
 			document.getElementById("orign_image").style.display = 'inline';
 			document.getElementById("color_image").style.display = 'inline';
-
-			document.body.style.backgroundImage = 'url(./picture/Background.jpg)';
+			checkConnectionInterval = setInterval(checkConnection, 1000);
 		});
 		ros.on('error', function (error) {
 			console.log('Error connecting to websocket server: ', error);
 			document.getElementById('connected').style.display = 'none';
-
+			
 			document.body.style.backgroundImage = 'url(./picture/red_filter_image.jpg)';
+			clearInterval(checkConnectionInterval);
 		});
 		ros.on('close', function () {
 			console.log('Connection to websocket server closed.');
@@ -37,10 +66,11 @@
 			document.getElementById("color_image").style.display = 'none';
 			document.getElementById("orign_image").style.display = 'none';
 			document.getElementById('connected').style.display = 'none';
-
+			
 			document.body.style.backgroundImage = 'url(./picture/red_filter_image.jpg)';
-
+			clearInterval(checkConnectionInterval);
 		});
+		
 
 		var ColorModelForm_Topic = new ROSLIB.Topic({
 			ros: ros,
