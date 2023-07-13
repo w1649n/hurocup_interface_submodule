@@ -204,6 +204,175 @@ function sleep(ms)
   }while((new Date().getTime() - starttime) < ms)
 }
 
+function createTopicsDRC() {
+  if(SensorPackage_Subscriber != null)
+  {
+    SensorPackage_Subscriber.unsubscribe();
+  }
+  var SensorPackage_Subscriber = new ROSLIB.Topic({
+  ros: ros,
+  name: '/package/sensorpackage',
+  messageType: 'tku_msgs/SensorPackage'
+  });
+  SensorPackage_Subscriber.subscribe(function (msg)
+  {		
+    document.getElementById("Roll").value = msg.IMUData[0];
+    document.getElementById("Pitch").value = msg.IMUData[1];
+    document.getElementById("Yaw").value = msg.IMUData[2];
+  });
+  if(SendPackageCallBack != null)
+  {
+    SendPackageCallBack.unsubscribe();
+  }
+  SendPackageCallBack = new ROSLIB.Topic({
+    ros: ros,
+    name: '/package/motioncallback',
+    messageType: 'std_msgs/Bool'
+  });
+  SendPackageCallBack.subscribe(function(msg)
+  {
+    sleep(200);//wait for motionpackage 1000/60 = 166
+    console.log("SendPackageCallBack");
+    if(msg.data == true)
+    {
+      CheckSector(Number(document.getElementById('Sector').value));
+    }
+    else if(msg.data == false)
+    {
+      document.getElementById('label').innerHTML = "Send sector is fail !! Please try again !!";
+    }
+  });
+
+  if(ExecuteCallBack != null)
+  {
+    ExecuteCallBack.unsubscribe();
+  }
+  ExecuteCallBack = new ROSLIB.Topic({
+    ros: ros,
+    name: '/package/executecallback',
+    messageType: 'std_msgs/Bool'
+  });
+  ExecuteCallBack.subscribe(function (msg)
+  {
+    if(msg.data == true)
+    {
+      if(executeSubscribeFlag == true)
+      {
+        executeSubscribeFlag = false;
+        console.log("execute~")
+      }
+      else if(standSubscribeFlag == true)
+      {
+        standSubscribeFlag = false;
+        console.log("stand~")
+      }
+    }
+    else
+    {
+      if(executeSubscribeFlag == true)
+      {
+        executeSubscribeFlag = false;
+        console.log("execute finish")
+      }
+      else if(standSubscribeFlag == true)
+      {
+        standSubscribeFlag = false;
+        console.log("stand finish")
+      }
+    }
+  });
+}
+
+function CheckSectorDRC(sectordata)
+{
+  console.log(sectordata)
+  var LoadParameterClient = new ROSLIB.Service({
+    ros : ros,
+    name : '/package/InterfaceCheckSector',
+    serviceType: 'tku_msgs/CheckSector'
+  });
+  var parameter_request = new ROSLIB.ServiceRequest({
+    data : sectordata
+  });
+  LoadParameterClient.callService(parameter_request , function(srv)
+  {
+    console.log("CheckSector");
+    executeSubscribeFlag = false;
+    standSubscribeFlag = false;
+    if(srv.checkflag == true)
+    {
+      if(doSendFlag == true)
+      {
+        doSendFlag = false;
+      }
+      else if(doExecuteFlag == true)
+      {
+        SendSectorPackage.data = sectordata;
+        SectorPackage.publish(SendSectorPackage);
+
+        doExecuteFlag = false;
+        executeSubscribeFlag = true;
+      }
+      else if(doStandFlag == true)
+      {
+        SendSectorPackage.data = sectordata;
+        SectorPackage.publish(SendSectorPackage);
+        
+        doStandFlag = false;
+        standSubscribeFlag = true;
+      }
+    }
+    else
+    {
+      if(doSendFlag == true)
+      {
+        doSendFlag = false;
+      }
+      else if(doExecuteFlag == true)
+      {
+        doExecuteFlag = false;
+      }
+      else if(doStandFlag == true)
+      {
+        doStandFlag = false;
+      }
+    }
+  });
+}
+
+function standDRC()
+{
+  doStandFlag = true;
+  console.log("stand");
+
+  CheckSector(29);
+}
+
+function executeDRC(motion)
+{
+  console.log("execute");
+  doExecuteFlag = true;
+  if(motion == "motion1")
+  {
+    CheckSectorDRC(Number(document.getElementById('Sector1').value));
+    console.log("1")
+    sleep(100)
+  }
+  else if(motion == "motion2")
+  {
+    CheckSectorDRC(Number(document.getElementById('Sector2').value));
+    console.log("2")
+    sleep(100)
+  }
+  else if(motion == "motion3")
+  {
+    CheckSectorDRC(Number(document.getElementById('Sector3').value));
+    console.log("3")
+    sleep(100)
+  }
+  
+}
+
 function CheckSector(sectordata)
 {
   var LoadParameterClient = new ROSLIB.Service({
